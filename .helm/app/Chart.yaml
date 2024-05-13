@@ -1,0 +1,3 @@
+apiVersion: v2
+name: php-kubernetes-example-app
+version: 0.1.0

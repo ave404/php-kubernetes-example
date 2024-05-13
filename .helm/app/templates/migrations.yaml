@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: {{ include ".helm.fullname" . }}-migrations
+  labels:
+    {{- include ".helm.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 120
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: php
+          {{- include ".helm.php" . | indent 10 }}
+          command: [ "php", "artisan", "migrate" ]
+
+      volumes:
+        {{- include ".helm.php_mounts" . | indent 8 }}

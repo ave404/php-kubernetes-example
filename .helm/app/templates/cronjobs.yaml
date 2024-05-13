@@ -1,0 +1,23 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: {{ include ".helm.fullname" . }}-inspire
+  labels:
+    {{- include ".helm.labels" . | nindent 4 }}
+
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          containers:
+            - name: php
+              {{- include ".helm.php" . | indent 14 }}
+              command: [ "php", "artisan", "inspire" ]
+
+          volumes:
+            {{- include ".helm.php_mounts" . | indent 12 }}

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: {{ include ".helm.fullname" . }}
+  labels:
+    {{- include ".helm.labels" . | nindent 4 }}
+
+spec:
+  serviceName: {{ include ".helm.fullname" . }}
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include ".helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include ".helm.selectorLabels" . | nindent 8 }}
+    spec:
+      initContainers:
+        - name: permission
+          image: busybox
+          command: [ "sh", "-c", "chown 70:70 /var/lib/postgresql/data" ]
+          volumeMounts:
+            - name: pgsql-data
+              mountPath: /var/lib/postgresql/data
+
+      containers:
+        - name: pgsql
+          image: postgres:16.2-alpine
+          ports:
+            - containerPort: 5432
+          securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+          env:
+            - name: POSTGRES_PASSWORD
+              value: 'password'
+          volumeMounts:
+            - name: pgsql-data
+              mountPath: /var/lib/postgresql/data
+
+      volumes:
+        - name: pgsql-data
+          hostPath:
+            path: /project/.docker/pgsql/data

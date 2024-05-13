@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include ".helm.fullname" . }}
+  labels:
+    {{- include ".helm.labels" . | nindent 4 }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include ".helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include ".helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.25-alpine-slim
+          ports:
+            - containerPort: 8080
+          securityContext:
+            runAsUser: 101
+            runAsGroup: 101
+          volumeMounts:
+            - name: nginx-config-files
+              subPath: nginx-php.conf
+              mountPath: /etc/nginx/conf.d/default.conf
+
+        - name: php
+          {{- include ".helm.php" . | indent 10 }}
+
+      volumes:
+        - name: nginx-config-files
+          configMap:
+            name: {{ include ".helm.fullname" . }}
+            items:
+              - key: nginx-php.conf
+                path: nginx-php.conf
+
+        {{- include ".helm.php_mounts" . | indent 8 }}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: {{ include ".helm.fullname" . }}-queue
+  labels:
+    {{- include ".helm.labels" . | nindent 4 }}
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include ".helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include ".helm.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: php
+          {{- include ".helm.php" . | indent 10 }}
+          command: [ "php", "artisan", "queue:work" ]
+
+      volumes:
+        {{- include ".helm.php_mounts" . | indent 8 }}
