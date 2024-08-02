@@ -1,16 +1,18 @@
-# php-kubernetes-presentation
+# php-kubernetes-example
 
-Для работы требуется [kubectl](https://kubernetes.io/ru/docs/tasks/tools/install-kubectl/), [helm](https://helm.sh/ru/docs/intro/install/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
+Example PHP application with Kubernetes (Laravel, Nginx, PostgreSQL). 
 
-## Запуск
+Requirements: [kubectl](https://kubernetes.io/ru/docs/tasks/tools/install-kubectl/), [helm](https://helm.sh/ru/docs/intro/install/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/#installation).
+
+## Start
 
 ```shell
 make up
 ```
 
-Открыть http://127.0.0.1 или http://127.0.0.1/api/info
+Open http://127.0.0.1 or http://127.0.0.1/api/info
 
-Посмотреть список POD проекта
+View project POD list
 
 ```shell
 kubectl get po
