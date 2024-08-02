@@ -17,3 +17,9 @@ View project POD list
 ```shell
 kubectl get po
 ```
+
+## Presentation
+
+Presentation: https://ave404.github.io/php-kubernetes-presentation/
+
+Source code: [ave404/php-kubernetes-presentation](https://github.com/ave404/php-kubernetes-presentation)
